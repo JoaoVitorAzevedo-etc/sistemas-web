@@ -16,7 +16,11 @@
     </nav>
     <section id="tela-login">
         <h2>Tela Login</h2>
-        <p>Aqui entrara o formulario da aula 2</p>
+        <form id="form-login">
+            <input type="email" id="email" placeholder="E-mail">
+            <input type="password" id="senha" placeholder="Senha">
+            <button type="submit">Entrar</button>
+        </form>
     </section>
 
     <section id="tela-produtos" style="display: none;">
@@ -32,7 +36,41 @@
     <section id="tela-perfil" style="display: none;">
         <h2>Perfil</h2>
         <p>Informações do usuário</p>
+    <script>
+        function mostrartela(nome) {
+   const tela = document.querySelectorAll('section');
+   tela.forEach(tela => {
+    tela.style.display = 'none';
+   });
 
-    <script src="main.js"></script>
+   const telaEscolhida = document.getElementById('tela-' + nome);
+   telaEscolhida.style.display = 'block';
+    }
+
+        const formLogin = document.getElementById('form-login');
+        formLogin.addEventListener('submit', function(evento){
+            evento.preventDefault()
+            console.log('Formulário enviado'); 
+        })
+        formLogin.addEventListener('submit', function(evento){
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            
+            fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email:email, senha:senha })
+            })
+            .then(response => response.json())
+            .then(dados => {
+                console.log(dados)
+            })
+        })
+
+
+
+    </script>
 </body>
 </html>
