@@ -30,7 +30,12 @@
 
     <section id="tela-admin" style="display: none;">
         <h2>Area Admin</h2>
-        <p>só quem for admin pode acessar (Aula 6)</p>
+        <form id="form-produto">
+            <input type="text" id="nome-produto" placeholder="Nome do Produto">
+            <input type="number" id="preco-produto" placeholder="Preço" step="0.01">
+            <button type="submit">Cadastrar Produto</button>
+        </form>
+        <p id="mensagem-produto"></p>
     </section>
 
     <section id="tela-perfil" style="display: none;">
@@ -67,10 +72,36 @@
             .then(dados => {
                 console.log(dados)
             })
+        });
+
+        const formProduto = document.getElementById('form-produto');
+        formProduto.addEventListener('submit', function(evento){
+            evento.preventDefault() 
+            const nome = document.getElementById('nome-produto').value;
+            const preco = document.getElementById('preco-produto').value;
+            if(nome === '' || preco === '') {
+                document.getElementById('mensagem-produto').textContent = 'Preencha todos os campos';
+                return;
+            }
+            if(number(preco) <= 0) {
+                document.getElementById('mensagem-produto').textContent = 'Preço deve ser maior que zero';
+                return;
+            }
+             fetch('http://localhost:3000/produtos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nome:nome, preco: Number (preco) })
+            })
+            .then(response => response.json())
+            .then(dados => {
+                 document.getElementById('mensagem-produto').textContent = 'produto cadastrado';
+            })
         })
 
 
-
     </script>
+    <script src="server.js"></script>
 </body>
 </html>
