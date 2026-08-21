@@ -15,11 +15,6 @@ const usuarios = [
 ]
 
 // Produtos que já existem, pra tela-produtos não nascer vazia
-let produtos = [
-  { nome: 'Camiseta', preco: 49.90 },
-  { nome: 'Caneca', preco: 24.90 },
-  { nome: 'Boné', preco: 39.90 }
-]
 
 // ── LOGIN (Aula 2) ──────────────────────────────
 app.post('/login', (req, res) => {
