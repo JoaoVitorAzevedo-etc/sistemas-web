@@ -1,131 +1,159 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel da Loja</title>
     <link rel="stylesheet" href="style.css">
-    <title>Painel da loja</title>
 </head>
 <body>
-    <h1>Painel da Loja</h1>
+
+    <h1>Painel Loja</h1>
+
     <nav>
-        <button onclick="mostrartela('login')">Login</button>
-        <button onclick="mostrartela('produtos')">Produtos</button>
-        <button onclick="mostrartela('admin')">Admin</button>
-        <button onclick="mostrartela('perfil')">Perfil</button>
+        <button onclick="mostrarTela('login')">Login</button>
+        <button onclick="mostrarTela('produtos')">Produtos</button>
+        <button onclick="mostrarTela('admin')">Admin</button>
+        <button onclick="mostrarTela('perfil')">Perfil</button>
     </nav>
+
     <section id="tela-login">
-        <h2>Tela Login</h2>
+        <h2>Tela de Login</h2>
         <form id="form-login">
-            <input type="email" id="email" placeholder="E-mail">
-            <input type="password" id="senha" placeholder="Senha">
-            <button type="submit">Entrar</button>
+            <input type="email" id="email" placeholder="E-mail:" required>
+            <input type="password" id="senha" placeholder="Senha:" required>
+            <button type="submit">Enviar</button>
         </form>
     </section>
 
     <section id="tela-produtos" style="display: none;">
         <h2>Tela Produtos</h2>
-        
-
+        <div id="container-produtos"></div>
     </section>
 
     <section id="tela-admin" style="display: none;">
-        <h2>Area Admin</h2>
+        <h2>Área Admin</h2>
         <form id="form-produto">
-            <input type="text" id="nome-produto" placeholder="Nome do Produto">
+            <input type="text" id="nome-produto" placeholder="Nome do produto">
             <input type="number" id="preco-produto" placeholder="Preço" step="0.01">
-            <button type="submit">Cadastrar Produto</button>
+            <button type="submit">Cadastrar</button>
         </form>
         <p id="mensagem-produto"></p>
     </section>
 
     <section id="tela-perfil" style="display: none;">
         <h2>Perfil</h2>
-        <p>Informações do usuário</p>
-    <script>
-        function mostrartela(nome) {
-   const tela = document.querySelectorAll('section');
-   tela.forEach(tela => {
-    tela.style.display = 'none';
-   });
+        <p>Só eu posso acessar meu perfil.</p>
+    </section>
 
-   const telaEscolhida = document.getElementById('tela-' + nome);
-   telaEscolhida.style.display = 'block';
-    }
+    <script>
+  
+        function mostrarTela(nome) {
+            const telas = document.querySelectorAll('section');
+            telas.forEach(tela => {
+                tela.style.display = 'none';
+            });
+
+            const telaEscolhida = document.getElementById('tela-' + nome);
+            if (telaEscolhida) {
+                telaEscolhida.style.display = 'block';
+            }
+        }
+
 
         const formLogin = document.getElementById('form-login');
-        formLogin.addEventListener('submit', function(evento){
-            evento.preventDefault()
-            console.log('Formulário enviado'); 
-        })
-        formLogin.addEventListener('submit', function(evento){
+        formLogin.addEventListener('submit', function(evento) {
+            evento.preventDefault();
+
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
-            
+
             fetch('http://localhost:3000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ email:email, senha:senha })
+                body: JSON.stringify({ email: email, senha: senha })
             })
-            .then(response => response.json())
+            .then(resposta => resposta.json())
             .then(dados => {
-                console.log(dados)
+                console.log('Login efetuado:', dados);
             })
+            .catch(erro => {
+                console.error('Erro ao fazer login:', erro);
+            });
         });
 
+
         const formProduto = document.getElementById('form-produto');
-        formProduto.addEventListener('submit', function(evento){
-            evento.preventDefault() 
+        formProduto.addEventListener('submit', function(evento) {
+            evento.preventDefault();
+
             const nome = document.getElementById('nome-produto').value;
             const preco = document.getElementById('preco-produto').value;
-            if(nome === '' || preco === '') {
-                document.getElementById('mensagem-produto').textContent = 'Preencha todos os campos';
+
+
+            if (nome === '' || preco === '') {
+                document.getElementById('mensagem-produto').textContent = 'Preencha nome e preço';
                 return;
             }
-            if(number(preco) <= 0) {
-                document.getElementById('mensagem-produto').textContent = 'Preço deve ser maior que zero';
+
+            if (Number(preco) <= 0) {
+                document.getElementById('mensagem-produto').textContent = 'O preço precisa ser maior que zero';
                 return;
             }
-             fetch('http://localhost:3000/produtos', {
+
+
+            fetch('http://localhost:3000/produtos', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ nome:nome, preco: Number (preco) })
+                body: JSON.stringify({
+                    nome: nome,
+                    preco: Number(preco)
+                })
             })
-            .then(response => response.json())
+            .then(resposta => resposta.json())
             .then(dados => {
-                 document.getElementById('mensagem-produto').textContent = 'produto cadastrado';
+                console.log(dados);
+                document.getElementById('mensagem-produto').textContent = 'Produto cadastrado!';
+                adicionarProduto(nome, Number(preco)); // Adiciona na lista da tela
             })
-        })
+            .catch(erro => {
+                console.error('Erro ao cadastrar produto:', erro);
+            });
+        });
+
+
         let produtos = [
-  { nome: 'Camiseta', preco: 49.90 },
-  { nome: 'Caneca', preco: 24.90 },
-  { nome: 'Boné', preco: 39.90 }
-]
+            { nome: 'Camiseta', preco: 49.90 },
+            { nome: 'Caneca', preco: 24.90 },
+            { nome: 'Boné', preco: 39.90 }
+        ];
 
+        function cardProdutos(produto) {
+            return `
+            <div class="cardProduto">
+                <h3>${produto.nome}</h3>
+                <p>R$ ${produto.preco.toFixed(2)}</p>
+            </div>`;
+        }
 
-function cardProdutos(produto){
-    return`
-    <div class="card-produto">
-        <h3>${produto.nome}</h3>
-        <p>R$ ${produto.preco.toFixed(2)}</p>
-    </div>`
-    
-function rederProdutos(){
-    const container = document.getElementById('tela-produtos');
-    const cards = produtos.map(cardProdutos).join('');
-    container.innerHTML = <h2>Tela Produtos</h2> + cards;
-}
-rederProdutos()
-}
+        function renderProdutos() {
+            const container = document.getElementById('tela-produtos');
+            const cards = produtos.map(cardProdutos).join('');
+            container.innerHTML = '<h2>Tela Produtos</h2>' + cards;
+        }
 
+        function adicionarProduto(nome, preco) {
+            produtos.push({ nome: nome, preco: preco });
+            renderProdutos();
+        }
 
-
+        renderProdutos();
+        adicionarProduto('teclado', 14.90)
 
     </script>
-    <script src="server.js"></script>
 </body>
 </html>
